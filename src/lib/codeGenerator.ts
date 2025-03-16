@@ -3,6 +3,24 @@ import { Node, Edge } from "@xyflow/react";
 import { PyTorchNodeData } from "@/components/NodeTypes";
 import { getNodeTemplate } from "@/lib/nodeCategories";
 
+// Type guard to check if data is PyTorchNodeData
+const isPyTorchNodeData = (data: any): data is PyTorchNodeData => {
+  return data && typeof data.label === 'string' && data.template !== undefined;
+};
+
+// Safely convert node.data to PyTorchNodeData
+const getNodeData = (node: Node): PyTorchNodeData => {
+  if (isPyTorchNodeData(node.data)) {
+    return node.data;
+  }
+  // If the data doesn't match PyTorchNodeData, return a default structure
+  return {
+    label: node.id || "Unknown Node",
+    template: undefined,
+    params: {}
+  };
+};
+
 // Helper to get a unique list of nodes that are inputs to the graph (no incoming edges)
 const getInputNodes = (nodes: Node[], edges: Edge[]): Node[] => {
   const nodesWithIncomingEdges = new Set(
@@ -30,7 +48,10 @@ const generateImports = (nodes: Node[]): string => {
   ];
   
   // Check if we have any specific node types that need imports
-  const nodeTypes = new Set(nodes.map(node => (node.data as any).template?.type));
+  const nodeTypes = new Set(nodes.map(node => {
+    const data = getNodeData(node);
+    return data.template?.type || '';
+  }));
   
   if (nodeTypes.has("dataLoader") || nodeTypes.has("imageInput")) {
     imports.push("import torchvision.datasets as datasets");
@@ -46,7 +67,8 @@ const generateImports = (nodes: Node[]): string => {
 // Generate a PyTorch model class from the flow
 const generateModelClass = (nodes: Node[], edges: Edge[]): string => {
   const layerNodes = nodes.filter(node => {
-    const template = (node.data as any).template;
+    const data = getNodeData(node);
+    const template = data.template;
     return template && (
       template.category === "layer" || 
       template.category === "activation"
@@ -61,7 +83,7 @@ class FlowModel(nn.Module):
   
   // Generate layer definitions
   layerNodes.forEach((node, index) => {
-    const data = node.data as PyTorchNodeData;
+    const data = getNodeData(node);
     const params = data.params || {};
     
     switch (data.template?.type) {
@@ -115,7 +137,7 @@ class FlowModel(nn.Module):
         return nodeOutputs.get(node.id) || inputVar;
       }
       
-      const data = node.data as PyTorchNodeData;
+      const data = getNodeData(node);
       const index = layerNodes.findIndex(n => n.id === node.id) + 1;
       let outputVar = inputVar;
       
@@ -189,24 +211,26 @@ class FlowModel(nn.Module):
 // Generate training code based on the flow
 const generateTrainingCode = (nodes: Node[]): string => {
   const hasImageInput = nodes.some(node => {
-    const template = (node.data as any).template;
-    return template && template.type === "imageInput";
+    const data = getNodeData(node);
+    return data.template?.type === "imageInput";
   });
   
   const optimizer = nodes.find(node => {
-    const template = (node.data as any).template;
-    return template && template.category === "optimizer";
+    const data = getNodeData(node);
+    return data.template?.category === "optimizer";
   });
   
-  const optimizerType = optimizer ? (optimizer.data as PyTorchNodeData).template?.type : "adam";
-  const optimizerParams = optimizer ? (optimizer.data as PyTorchNodeData).params || {} : {};
+  const optimizerData = optimizer ? getNodeData(optimizer) : null;
+  const optimizerType = optimizerData?.template?.type || "adam";
+  const optimizerParams = optimizerData?.params || {};
   
   const loss = nodes.find(node => {
-    const template = (node.data as any).template;
-    return template && template.category === "loss";
+    const data = getNodeData(node);
+    return data.template?.category === "loss";
   });
   
-  const lossType = loss ? (loss.data as PyTorchNodeData).template?.type : "crossEntropy";
+  const lossData = loss ? getNodeData(loss) : null;
+  const lossType = lossData?.template?.type || "crossEntropy";
   
   let trainingCode = `
 # Setup data loaders
@@ -318,4 +342,3 @@ ${modelClass}
 ${trainingCode}
 `;
 };
-
