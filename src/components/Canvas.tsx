@@ -35,7 +35,7 @@ const Canvas: React.FC = () => {
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
   const [undoStack, setUndoStack] = useState<Array<{nodes: Node[]; edges: Edge[]}>>([]);
   const [redoStack, setRedoStack] = useState<Array<{nodes: Node[]; edges: Edge[]}>>([]);
-  const { project, getIntersectingNodes } = useReactFlow();
+  const { getIntersectingNodes } = useReactFlow();
 
   // Keep track of history for undo/redo
   const saveToHistory = useCallback((newNodes: Node[], newEdges: Edge[]) => {
@@ -120,6 +120,7 @@ const Canvas: React.FC = () => {
         return;
       }
 
+      // Using screenToFlowPosition instead of project
       const position = reactFlowInstance.screenToFlowPosition({
         x: event.clientX - reactFlowBounds.left,
         y: event.clientY - reactFlowBounds.top,

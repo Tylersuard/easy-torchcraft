@@ -18,7 +18,9 @@ const NodeInfo: React.FC<NodeInfoProps> = ({ node, onClose, onUpdateNodeParams }
   const params = node.data?.params || {};
   
   const handleParamChange = (key: string, value: any) => {
-    const newParams = { ...node.data?.params, [key]: value };
+    // Create a new object explicitly to avoid spread type error
+    const currentParams = node.data?.params || {};
+    const newParams = Object.assign({}, currentParams, { [key]: value });
     onUpdateNodeParams(node.id, { params: newParams });
   };
   
@@ -87,7 +89,7 @@ const NodeInfo: React.FC<NodeInfoProps> = ({ node, onClose, onUpdateNodeParams }
         </label>
         <input
           type="text"
-          value={value as string}
+          value={String(value || "")}
           onChange={(e) => handleParamChange(key, e.target.value)}
           className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
         />
@@ -109,7 +111,7 @@ const NodeInfo: React.FC<NodeInfoProps> = ({ node, onClose, onUpdateNodeParams }
           <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
           <input
             type="text"
-            value={node.data?.label || ""}
+            value={String(node.data?.label || "")}
             onChange={(e) => onUpdateNodeParams(node.id, { label: e.target.value })}
             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
           />

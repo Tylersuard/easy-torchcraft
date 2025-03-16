@@ -11,7 +11,7 @@ export interface PyTorchNodeData {
   params?: Record<string, any>;
 }
 
-const PyTorchNode = memo(({ id, data, selected }: NodeProps<any>) => {
+const PyTorchNode = memo(({ id, data, selected }: NodeProps) => {
   const nodeData = data as PyTorchNodeData;
   const { label, template } = nodeData;
   const inputCount = template?.inputs || 0;
