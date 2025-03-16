@@ -3,6 +3,8 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Save, Play, Download, Trash2, Undo, Redo, FileDown, FileUp } from "lucide-react";
 import { toast } from "sonner";
+import { useReactFlow } from "@xyflow/react";
+import { generatePyTorchCode } from "@/lib/codeGenerator";
 
 interface HeaderProps {
   onRun: () => void;
@@ -25,9 +27,41 @@ const Header: React.FC<HeaderProps> = ({
   canUndo,
   canRedo
 }) => {
+  const { getNodes, getEdges } = useReactFlow();
+  
   const handleRun = () => {
     onRun();
     toast.success("Running model...");
+  };
+  
+  const handleExport = () => {
+    const nodes = getNodes();
+    const edges = getEdges();
+    
+    try {
+      // Generate the PyTorch code
+      const pythonCode = generatePyTorchCode(nodes, edges);
+      
+      // Create a blob for downloading
+      const blob = new Blob([pythonCode], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create a temporary link and click it to trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'pytorch_model.py';
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+      
+      toast.success("PyTorch code exported successfully");
+    } catch (error) {
+      console.error("Error exporting PyTorch code:", error);
+      toast.error("Failed to export PyTorch code");
+    }
   };
 
   return (
@@ -107,6 +141,7 @@ const Header: React.FC<HeaderProps> = ({
         <Button 
           variant="outline" 
           size="sm"
+          onClick={handleExport}
           className="bg-green-600 hover:bg-green-700 text-white border-green-500 h-8"
         >
           <Download size={16} className="mr-1" />

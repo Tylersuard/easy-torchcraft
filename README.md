@@ -1,69 +1,136 @@
-# Welcome to your Lovable project
 
-## Project info
+# PyTorch Flow - Visual Neural Network Designer
 
-**URL**: https://lovable.dev/projects/d99bd7bd-ee87-4b58-bcf0-624bc6f7a0d0
+![PyTorch Flow](/public/pytorch-flow-banner.png)
 
-## How can I edit this code?
+PyTorch Flow is an interactive, visual editor for designing neural network architectures using a flow-based interface. It allows you to create, visualize, and export PyTorch neural network models without writing any code.
 
-There are several ways of editing your application.
+## Features
 
-**Use Lovable**
+- **Visual Neural Network Design**: Drag-and-drop interface for creating complex neural networks
+- **Component Library**: Rich set of pre-defined components including layers, activations, optimizers, and more
+- **Live Editing**: Configure node parameters in real-time
+- **Code Export**: Generate PyTorch Python code that can be run locally
+- **Save & Load**: Persist your designs and continue working on them later
+- **Undo/Redo**: Full history management for design changes
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/d99bd7bd-ee87-4b58-bcf0-624bc6f7a0d0) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+### Online Version
 
-**Use your preferred IDE**
+Try PyTorch Flow online at [https://pytorch-flow.lovable.dev](https://pytorch-flow.lovable.dev)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+### Local Installation
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Clone the repository
+git clone https://github.com/yourusername/pytorch-flow.git
+cd pytorch-flow
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Install dependencies
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## How to Use
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. **Design Your Network**:
+   - Drag components from the sidebar onto the canvas
+   - Connect nodes by dragging from output handles to input handles
+   - Configure node parameters in the properties panel
 
-**Use GitHub Codespaces**
+2. **Test Run Your Network**:
+   - Click the "Run" button to simulate training (note: this doesn't execute real PyTorch code in the browser)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+3. **Export to PyTorch Code**:
+   - Once your design is complete, click "Export" to download Python code
+   - The exported code includes model definition, data loading, and training logic
 
-## What technologies are used for this project?
+4. **Run Locally**:
+   - Save the exported file (e.g., `pytorch_model.py`)
+   - Run the code in a Python environment with PyTorch installed
 
-This project is built with .
+## Running Exported Models
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+To run the exported PyTorch code:
 
-## How can I deploy this project?
+1. Make sure you have Python and PyTorch installed:
+   ```bash
+   pip install torch torchvision
+   ```
 
-Simply open [Lovable](https://lovable.dev/projects/d99bd7bd-ee87-4b58-bcf0-624bc6f7a0d0) and click on Share -> Publish.
+2. Run the exported Python file:
+   ```bash
+   python pytorch_model.py
+   ```
 
-## I want to use a custom domain - is that possible?
+## Available Components
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+### Input Nodes
+- **Data Loader**: Load and batch data for training
+- **Image Input**: Input for image data
+
+### Layer Nodes
+- **Linear Layer**: Fully connected layer
+- **Conv2D**: 2D convolutional layer
+- **LSTM**: Long Short-Term Memory layer
+
+### Activation Nodes
+- **ReLU**: Rectified Linear Unit activation
+- **Sigmoid**: Sigmoid activation function
+- **Tanh**: Hyperbolic tangent activation
+
+### Optimizer Nodes
+- **Adam**: Adam optimizer
+- **SGD**: Stochastic Gradient Descent
+
+### Transform Nodes
+- **Normalize**: Normalize input data
+- **Resize**: Resize input dimensions
+
+### Loss Nodes
+- **Cross Entropy**: Cross entropy loss function
+- **MSE**: Mean squared error loss
+
+### Operation Nodes
+- **Concatenate**: Concatenate multiple inputs
+- **Split**: Split input into multiple outputs
+
+### Output Nodes
+- **Model**: Final model output
+- **Visualize**: Visualize model performance
+- **Export**: Export trained model
+
+## Example Models
+
+Here are a few examples you can build with PyTorch Flow:
+
+1. **Basic CNN for MNIST**:
+   - Image Input → Conv2D → ReLU → Conv2D → ReLU → Linear → Cross Entropy
+
+2. **Simple LSTM for Sequence Data**:
+   - Data Loader → LSTM → Linear → Sigmoid → MSE
+
+3. **Multi-branch Network**:
+   - Image Input → Split → (Branch 1: Conv2D → ReLU) + (Branch 2: Resize → Conv2D) → Concatenate → Linear
+
+## Limitations
+
+- The visual editor doesn't execute actual PyTorch code in the browser
+- The generated code provides a starting point but may need customization for complex architectures
+- Some advanced PyTorch features aren't currently represented in the visual editor
+
+## Contributing
+
+Contributions are welcome! Feel free to submit issues or pull requests.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Built with React, TypeScript, and [React Flow](https://reactflow.dev/)
+- Inspired by PyTorch and visual programming environments

@@ -95,6 +95,26 @@ const PyTorchNode = memo(({ id, data, selected }: NodeProps) => {
       {/* Node Content */}
       <div className="p-2 text-xs text-gray-500">
         {template?.description || "PyTorch Node"}
+        {nodeData?.params && Object.keys(nodeData.params).length > 0 && (
+          <div className="mt-1 text-xs text-gray-400">
+            {Object.entries(nodeData.params)
+              .filter(([key]) => key !== "label")
+              .map(([key, value], idx) => (
+                <div key={key} className="truncate">
+                  {key.replace(/([A-Z])/g, " $1").replace(/_/g, " ").trim()}: {
+                    Array.isArray(value) ? `[${value.join(", ")}]` : 
+                    typeof value === "boolean" ? (value ? "Yes" : "No") : 
+                    value
+                  }
+                </div>
+              ))
+              .slice(0, 2) /* Show only first two params */
+            }
+            {Object.keys(nodeData.params).length > 2 && (
+              <div className="text-gray-400">...</div>
+            )}
+          </div>
+        )}
       </div>
       
       {/* Output Handles */}

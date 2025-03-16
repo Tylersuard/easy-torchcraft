@@ -24,6 +24,51 @@ const NodeInfo: React.FC<NodeInfoProps> = ({ node, onClose, onUpdateNodeParams }
     onUpdateNodeParams(node.id, { params: newParams });
   };
   
+  // Add default parameters based on node type if none exist
+  const addDefaultParams = () => {
+    let defaultParams = {};
+    
+    if (template) {
+      switch (template.type) {
+        case "linear":
+          defaultParams = { in_features: 784, out_features: 128, bias: true };
+          break;
+        case "conv2d":
+          defaultParams = { in_channels: 3, out_channels: 16, kernel_size: 3, stride: 1, padding: 0 };
+          break;
+        case "lstm":
+          defaultParams = { input_size: 28, hidden_size: 64, num_layers: 1, batch_first: true };
+          break;
+        case "adam":
+          defaultParams = { lr: 0.001, betas: [0.9, 0.999], eps: 1e-8, weight_decay: 0 };
+          break;
+        case "sgd":
+          defaultParams = { lr: 0.01, momentum: 0.9, weight_decay: 0 };
+          break;
+        case "normalize":
+          defaultParams = { mean: [0.5], std: [0.5] };
+          break;
+        case "resize":
+          defaultParams = { size: [224, 224], mode: "bilinear" };
+          break;
+        case "dataLoader":
+          defaultParams = { batch_size: 64, shuffle: true };
+          break;
+      }
+      
+      if (Object.keys(params).length === 0 && Object.keys(defaultParams).length > 0) {
+        onUpdateNodeParams(node.id, { params: defaultParams });
+      }
+    }
+  };
+  
+  // Add default parameters when the component mounts
+  React.useEffect(() => {
+    if (node && template?.configurable) {
+      addDefaultParams();
+    }
+  }, [node?.id, template?.type]);
+  
   const renderParamField = (key: string, value: any) => {
     if (typeof value === "boolean") {
       return (
@@ -36,7 +81,7 @@ const NodeInfo: React.FC<NodeInfoProps> = ({ node, onClose, onUpdateNodeParams }
               className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm font-medium text-gray-700 capitalize">
-              {key.replace(/([A-Z])/g, " $1").trim()}
+              {key.replace(/([A-Z])/g, " $1").replace(/_/g, " ").trim()}
             </span>
           </label>
         </div>
@@ -47,7 +92,7 @@ const NodeInfo: React.FC<NodeInfoProps> = ({ node, onClose, onUpdateNodeParams }
       return (
         <div key={key} className="mb-3">
           <label className="block text-sm font-medium text-gray-700 capitalize mb-1">
-            {key.replace(/([A-Z])/g, " $1").trim()}
+            {key.replace(/([A-Z])/g, " $1").replace(/_/g, " ").trim()}
           </label>
           <input
             type="number"
@@ -63,7 +108,7 @@ const NodeInfo: React.FC<NodeInfoProps> = ({ node, onClose, onUpdateNodeParams }
       return (
         <div key={key} className="mb-3">
           <label className="block text-sm font-medium text-gray-700 capitalize mb-1">
-            {key.replace(/([A-Z])/g, " $1").trim()}
+            {key.replace(/([A-Z])/g, " $1").replace(/_/g, " ").trim()}
           </label>
           <input
             type="text"
@@ -85,7 +130,7 @@ const NodeInfo: React.FC<NodeInfoProps> = ({ node, onClose, onUpdateNodeParams }
     return (
       <div key={key} className="mb-3">
         <label className="block text-sm font-medium text-gray-700 capitalize mb-1">
-          {key.replace(/([A-Z])/g, " $1").trim()}
+          {key.replace(/([A-Z])/g, " $1").replace(/_/g, " ").trim()}
         </label>
         <input
           type="text"
@@ -125,7 +170,7 @@ const NodeInfo: React.FC<NodeInfoProps> = ({ node, onClose, onUpdateNodeParams }
         </div>
       </div>
       
-      {template?.configurable && Object.keys(params).length > 0 && (
+      {template?.configurable && (
         <>
           <h4 className="font-medium text-sm text-gray-700 mb-2">Parameters</h4>
           <div className="space-y-1">
@@ -138,7 +183,7 @@ const NodeInfo: React.FC<NodeInfoProps> = ({ node, onClose, onUpdateNodeParams }
       )}
       
       <div className="mt-4 pt-4 border-t border-gray-200">
-        <Button size="sm" className="w-full">Apply Changes</Button>
+        <Button size="sm" className="w-full" onClick={() => onClose()}>Apply Changes</Button>
       </div>
     </div>
   );
