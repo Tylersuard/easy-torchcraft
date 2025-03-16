@@ -13,8 +13,7 @@ import {
   Node,
   useReactFlow,
   Panel,
-  NodeChange,
-  EdgeChange,
+  BackgroundVariant,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -59,7 +58,7 @@ const Canvas: React.FC = () => {
   const onConnect = useCallback(
     (params: Connection) => {
       saveToHistory(nodes, edges);
-      const newEdge = { ...params, animated: true };
+      const newEdge = { ...params, animated: true, style: { stroke: "#9ca3af" } };
       setEdges((eds) => addEdge(newEdge, eds));
       toast.success("Connected nodes");
     },
@@ -121,7 +120,7 @@ const Canvas: React.FC = () => {
         return;
       }
 
-      const position = reactFlowInstance.project({
+      const position = reactFlowInstance.screenToFlowPosition({
         x: event.clientX - reactFlowBounds.left,
         y: event.clientY - reactFlowBounds.top,
       });
@@ -180,7 +179,7 @@ const Canvas: React.FC = () => {
   };
   
   const onUpdateNodeParams = useCallback(
-    (nodeId: string, params: Record<string, any>) => {
+    (nodeId: string, updates: Record<string, any>) => {
       saveToHistory(nodes, edges);
       setNodes((nds) =>
         nds.map((node) => {
@@ -189,7 +188,7 @@ const Canvas: React.FC = () => {
               ...node,
               data: {
                 ...node.data,
-                ...params,
+                ...updates,
               },
             };
           }
@@ -339,7 +338,7 @@ const Canvas: React.FC = () => {
                 height: 100,
               }}
             />
-            <Background variant="dots" gap={15} size={1} className="bg-gray-50" />
+            <Background variant={BackgroundVariant.Dots} gap={15} size={1} className="bg-gray-50" />
             <Panel position="bottom-center">
               <div className="glassmorphism px-3 py-1.5 text-xs text-gray-500 rounded-full animate-fadeIn">
                 Drag nodes from the sidebar • Connect nodes by dragging between handles

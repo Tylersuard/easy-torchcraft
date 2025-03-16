@@ -4,14 +4,16 @@ import { Handle, Position, NodeProps } from "@xyflow/react";
 import { NodeTemplate } from "@/lib/nodeCategories";
 import { Cog } from "lucide-react";
 
-interface PyTorchNodeData {
+// Define the data structure for PyTorch nodes
+export interface PyTorchNodeData {
   label: string;
   template: NodeTemplate | undefined;
   params?: Record<string, any>;
 }
 
-const PyTorchNode = memo(({ id, data, selected }: NodeProps<PyTorchNodeData>) => {
-  const { label, template } = data;
+const PyTorchNode = memo(({ id, data, selected }: NodeProps<any>) => {
+  const nodeData = data as PyTorchNodeData;
+  const { label, template } = nodeData;
   const inputCount = template?.inputs || 0;
   const outputCount = template?.outputs || 0;
   

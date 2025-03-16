@@ -18,8 +18,8 @@ const NodeInfo: React.FC<NodeInfoProps> = ({ node, onClose, onUpdateNodeParams }
   const params = node.data?.params || {};
   
   const handleParamChange = (key: string, value: any) => {
-    const newParams = { ...params, [key]: value };
-    onUpdateNodeParams(node.id, newParams);
+    const newParams = { ...node.data?.params, [key]: value };
+    onUpdateNodeParams(node.id, { params: newParams });
   };
   
   const renderParamField = (key: string, value: any) => {
@@ -87,7 +87,7 @@ const NodeInfo: React.FC<NodeInfoProps> = ({ node, onClose, onUpdateNodeParams }
         </label>
         <input
           type="text"
-          value={value}
+          value={value as string}
           onChange={(e) => handleParamChange(key, e.target.value)}
           className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
         />
@@ -110,7 +110,7 @@ const NodeInfo: React.FC<NodeInfoProps> = ({ node, onClose, onUpdateNodeParams }
           <input
             type="text"
             value={node.data?.label || ""}
-            onChange={(e) => onUpdateNodeParams(node.id, { ...params, label: e.target.value })}
+            onChange={(e) => onUpdateNodeParams(node.id, { label: e.target.value })}
             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
           />
         </div>
