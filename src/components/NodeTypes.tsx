@@ -12,8 +12,9 @@ export interface PyTorchNodeData {
 }
 
 const PyTorchNode = memo(({ id, data, selected }: NodeProps) => {
-  const nodeData = data as PyTorchNodeData;
-  const { label, template } = nodeData;
+  // Cast to unknown first, then to PyTorchNodeData to avoid type errors
+  const nodeData = data as unknown as PyTorchNodeData;
+  const { label, template } = nodeData || { label: "", template: undefined };
   const inputCount = template?.inputs || 0;
   const outputCount = template?.outputs || 0;
   
